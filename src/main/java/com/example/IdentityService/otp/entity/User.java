@@ -1,4 +1,4 @@
-package com.example.IdentityService.otp.model;
+package com.example.IdentityService.otp.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

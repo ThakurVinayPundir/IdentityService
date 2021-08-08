@@ -1,6 +1,6 @@
 package com.example.IdentityService.otp.controller;
 
-import com.example.IdentityService.otp.model.EmailTemplate;
+import com.example.IdentityService.otp.entity.EmailTemplate;
 import com.example.IdentityService.otp.service.EmailService;
 import com.example.IdentityService.otp.service.OTPService;
 import org.springframework.beans.factory.annotation.Autowired;

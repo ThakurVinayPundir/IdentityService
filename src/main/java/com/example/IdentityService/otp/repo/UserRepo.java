@@ -1,6 +1,6 @@
 package com.example.IdentityService.otp.repo;
 
-import com.example.IdentityService.otp.model.User;
+import com.example.IdentityService.otp.entity.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

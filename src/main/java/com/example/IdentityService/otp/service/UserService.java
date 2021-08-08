@@ -2,13 +2,11 @@ package com.example.IdentityService.otp.service;
 
 
 import com.example.IdentityService.otp.exception.EmailNotVerifiedException;
-import com.example.IdentityService.otp.exception.SimpleAuthenticationEntryPoint;
-import com.example.IdentityService.otp.model.User;
-import com.example.IdentityService.otp.model.UserCredential;
+import com.example.IdentityService.otp.entity.User;
+import com.example.IdentityService.otp.entity.UserCredential;
 import com.example.IdentityService.otp.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

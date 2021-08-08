@@ -1,4 +1,4 @@
-package com.example.IdentityService.otp.model;
+package com.example.IdentityService.otp.entity;
 
 import java.io.File;
 import java.io.IOException;

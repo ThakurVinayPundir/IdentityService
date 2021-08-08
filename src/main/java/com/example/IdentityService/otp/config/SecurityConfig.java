@@ -4,6 +4,7 @@ import com.example.IdentityService.otp.exception.SimpleAuthenticationEntryPoint;
 import com.example.IdentityService.otp.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,7 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                   .antMatchers("/register").permitAll()
                   .antMatchers("/confirm-account").permitAll()
                   .antMatchers("/fun").permitAll()
-                  .anyRequest().authenticated()
+                    .antMatchers(HttpMethod.POST,"/addBlog").authenticated()
+                  .anyRequest().permitAll()//authenticated()
                   .and()
                   .httpBasic();
    }

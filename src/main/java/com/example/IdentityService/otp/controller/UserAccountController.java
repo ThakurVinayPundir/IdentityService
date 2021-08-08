@@ -1,15 +1,15 @@
 package com.example.IdentityService.otp.controller;
 
-import com.example.IdentityService.otp.exception.SimpleAuthenticationEntryPoint;
-import com.example.IdentityService.otp.model.ConfirmationToken;
-import com.example.IdentityService.otp.model.User;
-import com.example.IdentityService.otp.model.UserCredential;
+import com.example.IdentityService.otp.entity.ConfirmationToken;
+import com.example.IdentityService.otp.entity.User;
+import com.example.IdentityService.otp.entity.UserCredential;
 import com.example.IdentityService.otp.repo.ConfirmationTokenRepository;
 import com.example.IdentityService.otp.service.EmailService;
 import com.example.IdentityService.otp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +37,11 @@ public class UserAccountController {
    public Map<String, String> registerUser(@RequestBody User user) {
       User existingUser = userService.findByEmailIdIgnoreCase(user.getEmailId());
       if( existingUser == null){
+         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+         String rawPassword = user.getPassword();
+         String encodedPassword = encoder.encode(rawPassword);
+         user.setPassword(encodedPassword);
+         user.setRole("USER");
          userService.addUser(user);
          ConfirmationToken confirmationToken = new ConfirmationToken(user);
          confirmationTokenRepository.save(confirmationToken);
