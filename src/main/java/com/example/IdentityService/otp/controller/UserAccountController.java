@@ -1,24 +1,27 @@
 package com.example.IdentityService.otp.controller;
 
 import com.example.IdentityService.otp.entity.ConfirmationToken;
+import com.example.IdentityService.otp.entity.Image;
 import com.example.IdentityService.otp.entity.User;
 import com.example.IdentityService.otp.entity.UserCredential;
+import com.example.IdentityService.otp.exception.EmailException;
 import com.example.IdentityService.otp.repo.ConfirmationTokenRepository;
 import com.example.IdentityService.otp.service.EmailService;
+import com.example.IdentityService.otp.service.ImageDataService;
+import com.example.IdentityService.otp.service.OTPService;
 import com.example.IdentityService.otp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -32,11 +35,17 @@ public class UserAccountController {
    @Autowired
    private EmailService emailService;
 
+   @Autowired
+   private ImageDataService imageDataService;
+
+   @Autowired
+   private OTPService otpService;
+
    @PostMapping("/register")
    @ResponseBody
-   public Map<String, String> registerUser(@RequestBody User user) {
-      User existingUser = userService.findByEmailIdIgnoreCase(user.getEmailId());
-      if( existingUser == null){
+   public Map<String, String> registerUser(@RequestBody User user) throws Exception{
+      List<User> existingUser = userService.findByEmailIdIgnoreCase(user.getEmailId());
+      if( existingUser.size() == 0 || !existingUser.get(0).isEnabled()){
          BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
          String rawPassword = user.getPassword();
          String encodedPassword = encoder.encode(rawPassword);
@@ -49,9 +58,12 @@ public class UserAccountController {
          mailMessage.setTo(user.getEmailId());
          mailMessage.setSubject("Complete Registration!");
          mailMessage.setText("To confirm your account, please click here : "
-               +"http://localhost:8080/confirm-account?token="+confirmationToken.getConfirmationToken());
-         emailService.sendEmail(mailMessage);
-
+               +"http://localhost:8080/confirm-account?token="+confirmationToken.getConfirmationToken()+" \n or enter otp "+ otpService.generateOTP(user.getEmailId()));
+         try {
+             emailService.sendEmail(mailMessage);
+         } catch(Exception e) {
+             System.out.println(e.getMessage());
+         }
          Map<String, String> map = new HashMap<>();
          map.put("emailId", user.getEmailId());
          map.put("message", "successfulRegisteration");
@@ -60,7 +72,8 @@ public class UserAccountController {
          Map<String, String> map = new HashMap<>();
          map.put("emailId", user.getEmailId());
          map.put("message", "This email already exists!");
-         return map;
+         throw new EmailException("This email already exists!");
+         //return map;
       }
    }
 
@@ -70,7 +83,27 @@ public class UserAccountController {
       ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
 
       if(token != null){
-         User user =  userService.findByEmailIdIgnoreCase(token.getUser().getEmailId());
+         User user =  userService.findByEmailIdIgnoreCase(token.getUser().getEmailId()).get(0);
+         user.setEnabled(true);
+         userService.addUser(user);
+         Map<String, String> map = new HashMap<>();
+         map.put("message", "Account Verified");
+         return map;
+      } else {
+         Map<String, String> map = new HashMap<>();
+         map.put("message", "The link is invalid or broken!");
+         return map;
+      }
+   }
+
+   @RequestMapping(value="/validate-otp-account", method = { RequestMethod.POST })
+   @ResponseBody
+   public Map<String, String> validateUsingOTP(@RequestParam("otp") String otp, @RequestParam("emailId") String emailId) {
+
+      //ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
+      int otpFromCache = otpService.getOtp(emailId);
+      if(otp != null && (String.valueOf(otpFromCache)).equals(otp)){
+         User user =  userService.findByEmailIdIgnoreCase(emailId).get(0);
          user.setEnabled(true);
          userService.addUser(user);
          Map<String, String> map = new HashMap<>();
@@ -86,12 +119,24 @@ public class UserAccountController {
    @PostMapping("/login")
    @ResponseBody
    public User login()  {
+
       UserCredential authentication = (UserCredential) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
       User user = authentication.getUser();
       if(!user.isEnabled()) {
 //         throw new EmailNotVerifiedException("please verify email id");
       }
-      return userService.findByEmailIdIgnoreCase(user.getEmailId());
+      return userService.findByEmailIdIgnoreCase(user.getEmailId()).get(0);
    }
 
+   @PostMapping(value = "/upload", consumes = "multipart/form-data")
+   @ResponseBody
+   public Image upload(@RequestParam(value = "myFile") MultipartFile file, @RequestHeader HttpHeaders headers) throws IOException {
+      return imageDataService.upload(file);
+   }
+
+   @PostMapping(value = "/getImage")
+   @ResponseBody
+   public Image getImage() {
+      return imageDataService.getImage();
+   }
 }

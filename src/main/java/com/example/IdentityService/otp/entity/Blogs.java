@@ -17,7 +17,6 @@ public class Blogs {
 
     @Column(name = "auth_name")
     @NonNull
-    @JsonProperty("auth_name")
     private String authName;
 
     @Column(name = "content")

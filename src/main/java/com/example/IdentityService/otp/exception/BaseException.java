@@ -9,6 +9,10 @@ public class BaseException extends Exception{
       super();
    }
 
+   public BaseException(String message) {
+      this.message = message;
+   }
+
    public BaseException(String message, String code){
       this.message = message;
       this.code = code;
