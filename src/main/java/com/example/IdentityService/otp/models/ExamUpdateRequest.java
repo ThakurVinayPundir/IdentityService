@@ -1,55 +1,28 @@
-package com.example.IdentityService.otp.entity;
+package com.example.IdentityService.otp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "exam_data")
-public class ExamData {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="id")
-    private long id;
-
-    @Column(name = "user_id")
-    @JsonProperty("user_id")
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ExamUpdateRequest {
+    @JsonProperty(value = "user_id")
     private long userId;
 
-    @Column(name = "exam_name")
-    @JsonProperty("exam_name")
+    @JsonProperty(value = "exam_name")
     private String examName;
 
-    @Column(name = "exam_date")
-    @JsonProperty("exam_date")
+    @JsonProperty(value = "exam_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate examDate;
 
-    @Column(name = "admit_card_release_date")
-    @JsonProperty("admit_card_release_date")
+    @JsonProperty(value = "admit_card_release_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate admitCardReleaseDate;
-
-    public ExamData() {
-    }
-
-    public ExamData(long id, long userId, String examName, LocalDate examDate, LocalDate admitCardReleaseDate) {
-        this.id = id;
-        this.userId = userId;
-        this.examName = examName;
-        this.examDate = examDate;
-        this.admitCardReleaseDate = admitCardReleaseDate;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public long getUserId() {
         return userId;
@@ -81,5 +54,15 @@ public class ExamData {
 
     public void setAdmitCardReleaseDate(LocalDate admitCardReleaseDate) {
         this.admitCardReleaseDate = admitCardReleaseDate;
+    }
+
+    @Override
+    public String toString() {
+        return "ExamUpdateRequest{" +
+                "userId=" + userId +
+                ", examName='" + examName + '\'' +
+                ", examDate=" + examDate +
+                ", admitCardReleaseDate=" + admitCardReleaseDate +
+                '}';
     }
 }

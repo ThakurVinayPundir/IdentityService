@@ -3,6 +3,7 @@ package com.example.IdentityService.otp.controller;
 import com.example.IdentityService.otp.entity.ExamData;
 import com.example.IdentityService.otp.entity.User;
 import com.example.IdentityService.otp.entity.UserCredential;
+import com.example.IdentityService.otp.models.ExamUpdateRequest;
 import com.example.IdentityService.otp.service.ExamDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,11 +32,16 @@ public class ExamDataController {
 
     @PostMapping("/exams")
     @ResponseBody
-    public Map<String, Object> addExamData(@RequestBody ExamData examData) {
+    public Map<String, Object> addExamData(@RequestBody ExamUpdateRequest request) {
         UserCredential authentication = (UserCredential) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = authentication.getUser();
-        examData.setUserId(user.getUserid());
-        examDataService.addExamData(examData);
+        request.setUserId(user.getUserid());
+        ExamData examData1 = new ExamData();
+        examData1.setExamDate(request.getExamDate());
+        examData1.setAdmitCardReleaseDate(request.getAdmitCardReleaseDate());
+        examData1.setExamName(request.getExamName());
+        examData1.setUserId(request.getUserId());
+        examDataService.addExamData(examData1);
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         return response;
