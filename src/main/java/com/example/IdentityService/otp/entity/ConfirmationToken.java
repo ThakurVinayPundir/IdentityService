@@ -17,17 +17,17 @@ import java.util.UUID;
 public class ConfirmationToken {
    @Id
    @GeneratedValue(strategy = GenerationType.AUTO)
-   @Column(name="token_id")
+   @Column(name="tokenId")
    private long tokenid;
 
-   @Column(name="confirmation_token")
+   @Column(name="confirmationToken")
    private String confirmationToken;
 
    @Temporal(TemporalType.TIMESTAMP)
    private Date createdDate;
 
    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-   @JoinColumn(nullable = false, name = "user_id")
+   @JoinColumn(nullable = false, name = "userId")
    private User user;
 
    public ConfirmationToken() {

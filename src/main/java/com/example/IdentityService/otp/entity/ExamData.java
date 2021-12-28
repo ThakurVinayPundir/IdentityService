@@ -14,21 +14,21 @@ public class ExamData {
     @Column(name="id")
     private long id;
 
-    @Column(name = "user_id")
-    @JsonProperty("user_id")
+    @Column(name = "userId")
+    @JsonProperty("userId")
     private long userId;
 
-    @Column(name = "exam_name")
-    @JsonProperty("exam_name")
+    @Column(name = "examName")
+    @JsonProperty("examName")
     private String examName;
 
-    @Column(name = "exam_date")
-    @JsonProperty("exam_date")
+    @Column(name = "examDate")
+    @JsonProperty("examDate")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate examDate;
 
-    @Column(name = "admit_card_release_date")
-    @JsonProperty("admit_card_release_date")
+    @Column(name = "admitCardReleaseDate")
+    @JsonProperty("admitCardReleaseDate")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate admitCardReleaseDate;
 

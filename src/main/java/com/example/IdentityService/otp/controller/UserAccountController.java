@@ -4,7 +4,6 @@ import com.example.IdentityService.otp.entity.ConfirmationToken;
 import com.example.IdentityService.otp.entity.Image;
 import com.example.IdentityService.otp.entity.User;
 import com.example.IdentityService.otp.entity.UserCredential;
-import com.example.IdentityService.otp.exception.EmailException;
 import com.example.IdentityService.otp.repo.ConfirmationTokenRepository;
 import com.example.IdentityService.otp.service.EmailService;
 import com.example.IdentityService.otp.service.ImageDataService;
@@ -16,6 +15,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +43,7 @@ public class UserAccountController {
 
    @PostMapping("/register")
    @ResponseBody
+   @Transactional
    public Map<String, String> registerUser(@RequestBody User user) throws Exception{
       List<User> existingUser = userService.findByEmailIdIgnoreCase(user.getEmailId());
       if( existingUser.size() == 0 || !existingUser.get(0).isEnabled()){
@@ -59,11 +60,7 @@ public class UserAccountController {
          mailMessage.setSubject("Complete Registration!");
          mailMessage.setText("To confirm your account, please click here : "
                +"http://localhost:8080/confirm-account?token="+confirmationToken.getConfirmationToken()+" \n or enter otp "+ otpService.generateOTP(user.getEmailId()));
-         try {
-             emailService.sendEmail(mailMessage);
-         } catch(Exception e) {
-             System.out.println(e.getMessage());
-         }
+         emailService.sendEmail(mailMessage);
          Map<String, String> map = new HashMap<>();
          map.put("emailId", user.getEmailId());
          map.put("message", "successfulRegisteration");
@@ -72,8 +69,8 @@ public class UserAccountController {
          Map<String, String> map = new HashMap<>();
          map.put("emailId", user.getEmailId());
          map.put("message", "This email already exists!");
-         throw new EmailException("This email already exists!");
-         //return map;
+//         throw new EmailException("This email already exists!");
+         return map;
       }
    }
 
@@ -116,15 +113,17 @@ public class UserAccountController {
       }
    }
 
-   @PostMapping("/login")
+   @GetMapping("/login")
    @ResponseBody
    public User login()  {
 
-      UserCredential authentication = (UserCredential) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      User user = authentication.getUser();
-      if(!user.isEnabled()) {
-//         throw new EmailNotVerifiedException("please verify email id");
+      UserCredential authentication = null;
+      try {
+         authentication = (UserCredential) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      } catch (Exception e){
+//         throw new EmailNotVerifiedException("please verify email id and password");
       }
+      User user = authentication.getUser();
       return userService.findByEmailIdIgnoreCase(user.getEmailId()).get(0);
    }
 

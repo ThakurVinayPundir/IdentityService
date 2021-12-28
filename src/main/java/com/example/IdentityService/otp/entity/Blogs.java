@@ -15,14 +15,14 @@ public class Blogs {
     @Column(name="id")
     private long id;
 
-    @Column(name = "auth_name")
+    @Column(name = "authName")
     @NonNull
     private String authName;
 
     @Column(name = "content")
     private String content;
 
-    @Column(name = "video_link")
+    @Column(name = "videoLink")
     private String videoLink;
 
     @Temporal(TemporalType.TIMESTAMP)

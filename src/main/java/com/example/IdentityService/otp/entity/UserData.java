@@ -11,11 +11,11 @@ public class UserData {
     @Column(name="id")
     private long id;
 
-    @Column(name = "mob_no")
+    @Column(name = "mobNo")
     private String mobNo;
 
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
-    @JoinColumn(nullable = false, name = "user_id")
+    @JoinColumn(nullable = false, name = "userId")
     private User user;
 
     public UserData() {

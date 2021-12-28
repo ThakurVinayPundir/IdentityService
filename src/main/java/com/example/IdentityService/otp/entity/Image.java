@@ -7,7 +7,7 @@ import java.util.Arrays;
 @Table(name = "images")
 public class Image {
     @Id
-    @Column(name = "user_id")
+    @Column(name = "userId")
     private Long userId;
 
     @Column(name = "name")

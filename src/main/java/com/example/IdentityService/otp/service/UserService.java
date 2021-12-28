@@ -1,7 +1,6 @@
 package com.example.IdentityService.otp.service;
 
 
-import com.example.IdentityService.otp.exception.EmailNotVerifiedException;
 import com.example.IdentityService.otp.entity.User;
 import com.example.IdentityService.otp.entity.UserCredential;
 import com.example.IdentityService.otp.repo.UserRepo;
@@ -27,10 +26,6 @@ public class UserService implements UserDetailsService {
 
       if (user == null) {
          throw new DisabledException("please verify email");
-      }
-
-      if(!user.isEnabled()){
-         throw new EmailNotVerifiedException("please verify email");
       }
 
       return new UserCredential(user);
